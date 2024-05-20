@@ -6,14 +6,12 @@ using ZXing;
 using AForge.Video;
 using System.IO;
 using System.Drawing.Imaging;
-using System.Runtime.InteropServices;
-using ZXing.QrCode.Internal;
-using ZXing.Common;
-using BarcodeStandard;
+using System.Data.SqlClient;
 namespace ScanBarcode
 {
     public partial class Form1 : Form
     {
+        private SqlConnection sqlConnection;
         public Form1()
         {
             InitializeComponent();
@@ -23,6 +21,13 @@ namespace ScanBarcode
             label1.Font = new Font("IDAutomationHC39M", 12, FontStyle.Regular);
             tbResult.ReadOnly = true;
             tbResult.Enabled = false;
+            ConnectToDatabase();
+        }
+
+        private void ConnectToDatabase()
+        {
+            string connectionString = "Data Source=(local);Initial Catalog=barcode;Integrated Security=True;User ID=sa;Password=sa12345";
+            sqlConnection = new SqlConnection(connectionString);
         }
 
         VideoCaptureDevice videoCaptureDevice;
@@ -43,11 +48,18 @@ namespace ScanBarcode
                 foreach (FilterInfo device in videoDevices)
                 {
                     cbCam.Items.Add(device.Name);
+                    cbCamera.Items.Add(device.Name);
                 }
 
                 if (cbCam.Items.Count > 0)
                 {
                     cbCam.SelectedIndex = 0;
+                }
+
+
+                if (cbCamera.Items.Count > 0)
+                {
+                    cbCamera.SelectedIndex = 0;
                 }
             }
             catch (Exception ex)
@@ -58,24 +70,27 @@ namespace ScanBarcode
 
         private void comboBoxCameras_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string selectedCamera = cbCam.SelectedItem.ToString();
+            string selectedCam = cbCam.SelectedItem.ToString();
+            MessageBox.Show($"You selected: {selectedCam}", "Selected Camera", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            string selectedCamera = cbCamera.SelectedItem.ToString();
             MessageBox.Show($"You selected: {selectedCamera}", "Selected Camera", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            string selectedCamera = cbCam.SelectedItem.ToString();
+            string selectedCam = cbCam.SelectedItem.ToString();
 
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             FilterInfo selectedDevice = null;
 
             foreach (FilterInfo device in videoDevices)
             {
-                if (device.Name == selectedCamera)
+                if (device.Name == selectedCam)
                 {
                     selectedDevice = device;
                     break;
                 }
+
             }
 
             if (selectedDevice != null)
@@ -97,6 +112,8 @@ namespace ScanBarcode
                 tbResult.Invoke(new MethodInvoker(delegate ()
                 {
                     tbResult.Text = result.Text;
+                    tbBarcode.Text = result.Text;
+                    tbTimeImport.Text = DateTime.Now.ToString("HH:mm:ss");
 
                     bool barcodeExists = false;
                     foreach (DataGridViewRow row in dataGridViewResults.Rows)
@@ -165,7 +182,6 @@ namespace ScanBarcode
             pbResult.Image = Image.FromStream(stream);
             pbResult.SizeMode = PictureBoxSizeMode.AutoSize;
         }
-
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -254,5 +270,140 @@ namespace ScanBarcode
             }
         }
 
+        private void btnBD_Click(object sender, EventArgs e)
+        {
+            string selectedCamera = cbCamera.SelectedItem.ToString();
+
+            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            FilterInfo selectedDevice = null;
+
+            foreach (FilterInfo device in videoDevices)
+            {
+                if (device.Name == selectedCamera)
+                {
+                    selectedDevice = device;
+                    break;
+                }
+
+            }
+
+            if (selectedDevice != null)
+            {
+                videoCaptureDevice = new VideoCaptureDevice(selectedDevice.MonikerString);
+                videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrameCreate;
+                videoCaptureDevice.Start();
+            }
+        }
+
+        private void VideoCaptureDevice_NewFrameCreate(object sender, NewFrameEventArgs eventArgs)
+        {
+            Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            BarcodeReader barcodeReader = new BarcodeReader();
+            var result = barcodeReader.Decode(bitmap);
+
+            if (result != null)
+            {
+                tbResult.Invoke(new MethodInvoker(delegate ()
+                {
+                    tbResult.Text = result.Text;
+                    tbBarcode.Text = result.Text;
+                    tbTimeImport.Text = DateTime.Now.ToString("HH:mm:ss");
+                }));
+            }
+            pbDisplayCamera.Image = bitmap;
+        }
+
+        private void btnOff_Click(object sender, EventArgs e)
+        {
+            if (videoCaptureDevice != null)
+            {
+                if (videoCaptureDevice.IsRunning)
+                {
+                    videoCaptureDevice.Stop();
+                    videoCaptureDevice = null;
+                }
+            }
+        }
+
+        private void btnInput_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files (*.jpg, *.jpeg, *.png, *.gif, *.bmp)|*.jpg; *.jpeg; *.png; *.gif; *.bmp|All Files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Load the selected image
+                        string imagePath = openFileDialog.FileName;
+                        Bitmap image = new Bitmap(imagePath);
+
+                        pbDisplayCam.Image = image;
+                        pbDisplayCam.SizeMode = PictureBoxSizeMode.AutoSize;
+
+                        ReadBarcodeFromImageCreate(image);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        private void ReadBarcodeFromImageCreate(Bitmap image)
+        {
+            BarcodeReader reader = new BarcodeReader();
+            Result result = reader.Decode(image);
+
+            if (result != null)
+            {
+                tbResult.Invoke(new MethodInvoker(delegate ()
+                {
+                    tbBarcode.Text = result.Text;
+                    tbTimeImport.Text = DateTime.Now.ToString("HH:mm:ss");
+                }));
+            }
+            else
+            {
+                MessageBox.Show("No barcode detected.", "Barcode Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void CreateProduct(string productName, string barcode, DateTime timeImport, int quantity, float price)
+        {
+            string query = "INSERT INTO Product (productName, barcode, timeImport, quantity, price) VALUES (@productName, @barcode, @timeImport, @quantity, @price)";
+            SqlCommand command = new SqlCommand(query, sqlConnection);
+            command.Parameters.AddWithValue("@productName", productName);
+            command.Parameters.AddWithValue("@barcode", barcode);
+            command.Parameters.AddWithValue("@timeImport", timeImport);
+            command.Parameters.AddWithValue("@quantity", quantity);
+            command.Parameters.AddWithValue("@price", price);
+
+            try
+            {
+                command.ExecuteNonQuery();
+                MessageBox.Show("Product created successfully!");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
+        }
+
+        private void btnConfirm_Click(object sender, EventArgs e)
+        {
+            CreateProduct(tbProductName.Text, tbBarcode.Text, DateTime.Parse(tbTimeImport.Text), int.Parse(tbQuantity.Text), float.Parse(tbPrice.Text));
+
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            // TODO: This line of code loads data into the 'barcodeDataSet.Product' table. You can move, or remove it, as needed.
+            this.productTableAdapter.Fill(this.barcodeDataSet.Product);
+
+        }
     }
 }
