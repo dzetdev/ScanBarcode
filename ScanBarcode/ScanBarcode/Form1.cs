@@ -7,6 +7,7 @@ using AForge.Video;
 using System.IO;
 using System.Drawing.Imaging;
 using System.Data.SqlClient;
+using System.Data;
 namespace ScanBarcode
 {
     public partial class Form1 : Form
@@ -28,6 +29,15 @@ namespace ScanBarcode
         {
             string connectionString = "Data Source=(local);Initial Catalog=barcode;Integrated Security=True;User ID=sa;Password=sa12345";
             sqlConnection = new SqlConnection(connectionString);
+
+            try
+            {
+                sqlConnection.Open();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error: " + ex.Message);
+            }
         }
 
         VideoCaptureDevice videoCaptureDevice;
@@ -386,6 +396,7 @@ namespace ScanBarcode
             {
                 command.ExecuteNonQuery();
                 MessageBox.Show("Product created successfully!");
+                LoadData();
             }
             catch (Exception ex)
             {
@@ -396,14 +407,46 @@ namespace ScanBarcode
         private void btnConfirm_Click(object sender, EventArgs e)
         {
             CreateProduct(tbProductName.Text, tbBarcode.Text, DateTime.Parse(tbTimeImport.Text), int.Parse(tbQuantity.Text), float.Parse(tbPrice.Text));
+        }
 
+
+        private void LoadData()
+        {
+            string query = "SELECT * FROM Product";
+            SqlDataAdapter dataAdapter = new SqlDataAdapter(query, sqlConnection);
+            DataTable dataTable = new DataTable();
+            dataAdapter.Fill(dataTable);
+            dataGridView1.DataSource = dataTable;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             // TODO: This line of code loads data into the 'barcodeDataSet.Product' table. You can move, or remove it, as needed.
             this.productTableAdapter.Fill(this.barcodeDataSet.Product);
+        }
 
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            ClearCreateBarcode();
+        }
+
+        public void ClearCreateBarcode()
+        {
+            tbInput.Text = "";
+            pbResult.Image = null;
+        }
+
+        private void btnNull_Click(object sender, EventArgs e)
+        {
+            ClearCreateProduct();
+        }
+        public void ClearCreateProduct()
+        {
+            tbProductName.Text = "";
+            tbBarcode.Text = "";
+            tbTimeImport.Text = "";
+            tbQuantity.Text = "";
+            tbPrice.Text = "";
         }
     }
 }

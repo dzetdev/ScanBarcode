@@ -79,6 +79,8 @@
             this.timeImportDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.quantityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.priceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnNull = new System.Windows.Forms.Button();
             this.tcScanBarcode.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewResults)).BeginInit();
@@ -226,6 +228,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btnRefresh);
             this.tabPage2.Controls.Add(this.btnSave);
             this.tabPage2.Controls.Add(this.label1);
             this.tabPage2.Controls.Add(this.pbResult);
@@ -295,6 +298,7 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.btnNull);
             this.tabPage3.Controls.Add(this.btnConfirm);
             this.tabPage3.Controls.Add(this.pbDisplayCamera);
             this.tabPage3.Controls.Add(this.cbCamera);
@@ -322,7 +326,7 @@
             // 
             // btnConfirm
             // 
-            this.btnConfirm.Location = new System.Drawing.Point(129, 365);
+            this.btnConfirm.Location = new System.Drawing.Point(206, 365);
             this.btnConfirm.Name = "btnConfirm";
             this.btnConfirm.Size = new System.Drawing.Size(75, 23);
             this.btnConfirm.TabIndex = 18;
@@ -497,9 +501,9 @@
             this.quantityDataGridViewTextBoxColumn,
             this.priceDataGridViewTextBoxColumn});
             this.dataGridView1.DataSource = this.productBindingSource;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 69);
+            this.dataGridView1.Location = new System.Drawing.Point(0, 121);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(844, 320);
+            this.dataGridView1.Size = new System.Drawing.Size(646, 47);
             this.dataGridView1.TabIndex = 0;
             // 
             // barcodeDataSet
@@ -552,6 +556,26 @@
             this.priceDataGridViewTextBoxColumn.DataPropertyName = "price";
             this.priceDataGridViewTextBoxColumn.HeaderText = "price";
             this.priceDataGridViewTextBoxColumn.Name = "priceDataGridViewTextBoxColumn";
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(32, 164);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.Text = "Xoá dữ liệu";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // btnNull
+            // 
+            this.btnNull.Location = new System.Drawing.Point(753, 301);
+            this.btnNull.Name = "btnNull";
+            this.btnNull.Size = new System.Drawing.Size(75, 23);
+            this.btnNull.TabIndex = 19;
+            this.btnNull.Text = "Xoá dữ liệu";
+            this.btnNull.UseVisualStyleBackColor = true;
+            this.btnNull.Click += new System.EventHandler(this.btnNull_Click);
             // 
             // Form1
             // 
@@ -634,6 +658,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn timeImportDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn quantityDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn priceDataGridViewTextBoxColumn;
+        private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnNull;
     }
 }
 
