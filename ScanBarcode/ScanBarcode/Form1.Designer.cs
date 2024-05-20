@@ -81,9 +81,9 @@
             // 
             // pbDisplayCam
             // 
-            this.pbDisplayCam.Location = new System.Drawing.Point(234, 163);
+            this.pbDisplayCam.Location = new System.Drawing.Point(234, 141);
             this.pbDisplayCam.Name = "pbDisplayCam";
-            this.pbDisplayCam.Size = new System.Drawing.Size(413, 207);
+            this.pbDisplayCam.Size = new System.Drawing.Size(413, 229);
             this.pbDisplayCam.TabIndex = 5;
             this.pbDisplayCam.TabStop = false;
             // 

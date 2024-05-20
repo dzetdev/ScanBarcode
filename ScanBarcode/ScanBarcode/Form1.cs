@@ -1,127 +1,119 @@
-﻿using System;
+﻿using AForge.Video.DirectShow;
+using System;
 using System.Drawing;
 using System.Windows.Forms;
 using ZXing;
 using AForge.Video;
-using AForge.Video.DirectShow;
 
 namespace ScanBarcode
 {
     public partial class Form1 : Form
     {
-        private FilterInfoCollection filterInfoCollection;
-        private VideoCaptureDevice videoCaptureDevice;
-
         public Form1()
         {
             InitializeComponent();
+            LoadCameraDevices();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        VideoCaptureDevice videoCaptureDevice;
+
+        private void LoadCameraDevices()
         {
             try
             {
-                // Attempt to load available video devices
-                filterInfoCollection = new FilterInfoCollection(FilterCategory.VideoInputDevice);
-                cbCam.Items.Clear();
+                FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
 
-                foreach (FilterInfo device in filterInfoCollection)
+                if (videoDevices.Count == 0)
+                {
+                    MessageBox.Show("No video sources found", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                foreach (FilterInfo device in videoDevices)
                 {
                     cbCam.Items.Add(device.Name);
                 }
 
                 if (cbCam.Items.Count > 0)
                 {
-                    cbCam.SelectedIndex = 0; // Select the first camera by default
-                    MessageBox.Show("Cameras loaded successfully.");
+                    cbCam.SelectedIndex = 0;
                 }
-                else
-                {
-                    MessageBox.Show("No camera devices found.");
-                }
-            }
-            catch (ApplicationException ex)
-            {
-                MessageBox.Show("No local capture devices found: " + ex.Message);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("An error occurred while loading camera devices: " + ex.Message);
+                MessageBox.Show($"An error occurred: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
+        private void comboBoxCameras_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedCamera = cbCam.SelectedItem.ToString();
+            MessageBox.Show($"You selected: {selectedCamera}", "Selected Camera", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
         private void btnStart_Click(object sender, EventArgs e)
         {
-            try
+            string selectedCamera = cbCam.SelectedItem.ToString();
+
+            FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+            FilterInfo selectedDevice = null;
+
+            foreach (FilterInfo device in videoDevices)
             {
-                // Ensure a camera is selected
-                if (cbCam.SelectedIndex >= 0 && cbCam.SelectedIndex < filterInfoCollection.Count)
+                if (device.Name == selectedCamera)
                 {
-                    videoCaptureDevice = new VideoCaptureDevice(filterInfoCollection[cbCam.SelectedIndex].MonikerString);
-                    videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
-                    videoCaptureDevice.Start();
-                }
-                else
-                {
-                    MessageBox.Show("Please select a valid camera from the list.");
+                    selectedDevice = device;
+                    break;
                 }
             }
-            catch (Exception ex)
+
+            if (selectedDevice != null)
             {
-                MessageBox.Show("An error occurred while starting the camera: " + ex.Message);
+                videoCaptureDevice = new VideoCaptureDevice(selectedDevice.MonikerString);
+                videoCaptureDevice.NewFrame += VideoCaptureDevice_NewFrame;
+                videoCaptureDevice.Start();
             }
         }
 
         private void VideoCaptureDevice_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
-            try
-            {
-                Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
-                BarcodeReader barcodeReader = new BarcodeReader();
-                var result = barcodeReader.Decode(bitmap);
+            Bitmap bitmap = (Bitmap)eventArgs.Frame.Clone();
+            BarcodeReader barcodeReader = new BarcodeReader();
+            var result = barcodeReader.Decode(bitmap);
 
-                if (result != null)
+            if (result != null)
+            {
+                tbResult.Invoke(new MethodInvoker(delegate ()
                 {
-                    tbResult.Invoke(new MethodInvoker(delegate ()
-                    {
-                        tbResult.Text = result.Text;
-                    }));
-                }
-
-                pbDisplayCam.Image = bitmap;
+                    tbResult.Text = result.Text;
+                }));
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while processing the video frame: " + ex.Message);
-            }
+            pbDisplayCam.Image = bitmap;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
         {
-            StopVideoCapture();
+            if (videoCaptureDevice != null)
+            {
+                if (videoCaptureDevice.IsRunning)
+                {
+                    videoCaptureDevice.Stop();
+                    videoCaptureDevice = null;
+                }
+            }
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            StopVideoCapture();
-        }
-
-        private void StopVideoCapture()
-        {
-            try
+            if (videoCaptureDevice != null)
             {
-                if (videoCaptureDevice != null && videoCaptureDevice.IsRunning)
+                if (videoCaptureDevice.IsRunning)
                 {
-                    videoCaptureDevice.SignalToStop();
-                    videoCaptureDevice.WaitForStop();
+                    videoCaptureDevice.Stop();
                     videoCaptureDevice = null;
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show("An error occurred while stopping the camera: " + ex.Message);
-            }
         }
+
     }
 }
