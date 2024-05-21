@@ -8,6 +8,7 @@ using System.IO;
 using System.Drawing.Imaging;
 using System.Data.SqlClient;
 using System.Data;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace ScanBarcode
 {
     public partial class Form1 : Form
@@ -143,6 +144,7 @@ namespace ScanBarcode
                 }));
             }
             pbDisplayCam.Image = bitmap;
+            pbDisplayCamera.Image = bitmap;
         }
 
         private void btnStop_Click(object sender, EventArgs e)
@@ -409,7 +411,6 @@ namespace ScanBarcode
             CreateProduct(tbProductName.Text, tbBarcode.Text, DateTime.Parse(tbTimeImport.Text), int.Parse(tbQuantity.Text), float.Parse(tbPrice.Text));
         }
 
-
         private void LoadData()
         {
             string query = "SELECT * FROM Product";
@@ -448,5 +449,208 @@ namespace ScanBarcode
             tbQuantity.Text = "";
             tbPrice.Text = "";
         }
+
+        private void btnSearch_Click(object sender, EventArgs e)
+        {
+            if (sqlConnection == null || sqlConnection.State == ConnectionState.Closed)
+            {
+                ConnectToDatabase();
+            }
+
+            if (sqlConnection.State != ConnectionState.Open)
+            {
+                MessageBox.Show("Unable to establish a connection to the database.");
+                return;
+            }
+
+            string query = "SELECT * FROM Product WHERE barcode LIKE @barcode";
+
+            try
+            {
+                using (SqlDataAdapter dataAdapter = new SqlDataAdapter(query, sqlConnection))
+                {
+                    dataAdapter.SelectCommand.Parameters.AddWithValue("@barcode", tbSearch.Text + "%");
+
+                    DataTable dataTable = new DataTable();
+                    dataAdapter.Fill(dataTable);
+
+                    dataGridView1.DataSource = dataTable;
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBox.Show("An error occurred: " + exc.Message);
+            }
+        }
+
+        private void btnIn_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files (*.jpg, *.jpeg, *.png, *.gif, *.bmp)|*.jpg; *.jpeg; *.png; *.gif; *.bmp|All Files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Load the selected image
+                        string imagePath = openFileDialog.FileName;
+                        Bitmap image = new Bitmap(imagePath);
+
+                        pbDisplayCam.Image = image;
+                        pbDisplayCam.SizeMode = PictureBoxSizeMode.AutoSize;
+
+                        ReadBarcodeFromImageSearch(image);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void ReadBarcodeFromImageSearch(Bitmap image)
+        {
+            BarcodeReader reader = new BarcodeReader();
+            Result result = reader.Decode(image);
+
+            if (result != null)
+            {
+                tbResult.Invoke(new MethodInvoker(delegate ()
+                {
+                    tbSearch.Text = result.Text;
+                }));
+            }
+            else
+            {
+                MessageBox.Show("No barcode detected.", "Barcode Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void label3_Click(object sender, EventArgs e)
+        {
+            tbSearch.Text = "";
+            LoadData();
+        }
+
+        private void btnPut_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files (*.jpg, *.jpeg, *.png, *.gif, *.bmp)|*.jpg; *.jpeg; *.png; *.gif; *.bmp|All Files (*.*)|*.*";
+                openFileDialog.FilterIndex = 1;
+                openFileDialog.RestoreDirectory = true;
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    try
+                    {
+                        // Load the selected image
+                        string imagePath = openFileDialog.FileName;
+                        Bitmap image = new Bitmap(imagePath);
+
+                        pbDisplayCam.Image = image;
+                        pbDisplayCam.SizeMode = PictureBoxSizeMode.AutoSize;
+
+                        ReadBarcodeFromImageIn(image);
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error loading image: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+        private void ReadBarcodeFromImageIn(Bitmap image)
+        {
+            if (sqlConnection == null || sqlConnection.State == ConnectionState.Closed)
+            {
+                ConnectToDatabase();
+            }
+
+            if (sqlConnection.State != ConnectionState.Open)
+            {
+                MessageBox.Show("Unable to establish a connection to the database.");
+                return;
+            }
+
+            BarcodeReader reader = new BarcodeReader();
+            Result result = reader.Decode(image);
+
+            if (result != null)
+            {
+                string barcode = result.Text;
+                string query = "SELECT ProductName, Barcode, Price FROM Product WHERE Barcode = @barcode";
+
+                using (SqlCommand command = new SqlCommand(query, sqlConnection))
+                {
+                    command.Parameters.AddWithValue("@barcode", barcode);
+
+                    try
+                    {
+                        SqlDataReader sqlReader = command.ExecuteReader(); 
+
+                        if (sqlReader.Read())
+                        {
+                            string productName = sqlReader["ProductName"].ToString();
+                            string price = sqlReader["Price"].ToString();
+
+                            listBox1.Items.Add($"ProductName: {productName} || , Barcode: {barcode} || , Price: {price}");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Barcode not found in the database.", "Barcode Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+
+                        sqlReader.Close(); 
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Error: " + ex.Message);
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("No barcode detected.", "Barcode Not Found", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+
+        public class Product
+        {
+            public string ProductName { get; set; }
+            public string Barcode { get; set; }
+            public DateTime TimeImport { get; set; }
+            public int Quantity { get; set; }
+            public float Price { get; set; }
+        }
+
+        private void btnPayment_Click(object sender, EventArgs e)
+        {
+            float totalPrice = 0.0f;
+
+            foreach (var item in listBox1.Items)
+            {
+                string itemText = item.ToString();
+
+                int priceIndex = itemText.LastIndexOf("Price:");
+
+                if (priceIndex != -1)
+                {
+                    string priceText = itemText.Substring(priceIndex + 6).Trim();
+
+                    if (float.TryParse(priceText, out float price))
+                    {
+                        totalPrice += price;
+                    }
+                }
+            }
+            tbPayment.Text = totalPrice.ToString();
+        }
     }
+
 }

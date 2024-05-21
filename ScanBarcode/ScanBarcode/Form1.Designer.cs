@@ -43,6 +43,7 @@
             this.pbDisplayCam = new System.Windows.Forms.PictureBox();
             this.lbTitle = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnRefresh = new System.Windows.Forms.Button();
             this.btnSave = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.pbResult = new System.Windows.Forms.PictureBox();
@@ -50,6 +51,7 @@
             this.lbtilte = new System.Windows.Forms.Label();
             this.btnCreate = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.btnNull = new System.Windows.Forms.Button();
             this.btnConfirm = new System.Windows.Forms.Button();
             this.pbDisplayCamera = new System.Windows.Forms.PictureBox();
             this.cbCamera = new System.Windows.Forms.ComboBox();
@@ -69,18 +71,31 @@
             this.tbBarcode = new System.Windows.Forms.TextBox();
             this.tbProductName = new System.Windows.Forms.TextBox();
             this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.lbReloadData = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.barcodeDataSet = new ScanBarcode.barcodeDataSet();
-            this.productBindingSource = new System.Windows.Forms.BindingSource(this.components);
-            this.productTableAdapter = new ScanBarcode.barcodeDataSetTableAdapters.ProductTableAdapter();
             this.productIdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.productNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.barcodeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.timeImportDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.quantityDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.priceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.btnRefresh = new System.Windows.Forms.Button();
-            this.btnNull = new System.Windows.Forms.Button();
+            this.productBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.barcodeDataSet = new ScanBarcode.barcodeDataSet();
+            this.productTableAdapter = new ScanBarcode.barcodeDataSetTableAdapters.ProductTableAdapter();
+            this.btnSearch = new System.Windows.Forms.Button();
+            this.tbSearch = new System.Windows.Forms.TextBox();
+            this.btnIn = new System.Windows.Forms.Button();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.btnOn = new System.Windows.Forms.Button();
+            this.btnPut = new System.Windows.Forms.Button();
+            this.lbPaymen = new System.Windows.Forms.Label();
+            this.lbListProduct = new System.Windows.Forms.Label();
+            this.lbCC = new System.Windows.Forms.Label();
+            this.lbPayment = new System.Windows.Forms.Label();
+            this.tbPayment = new System.Windows.Forms.TextBox();
+            this.btnPayment = new System.Windows.Forms.Button();
             this.tcScanBarcode.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewResults)).BeginInit();
@@ -91,8 +106,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.pbDisplayCamera)).BeginInit();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.barcodeDataSet)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.productBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.barcodeDataSet)).BeginInit();
+            this.tabPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // tcScanBarcode
@@ -101,6 +117,7 @@
             this.tcScanBarcode.Controls.Add(this.tabPage2);
             this.tcScanBarcode.Controls.Add(this.tabPage3);
             this.tcScanBarcode.Controls.Add(this.tabPage4);
+            this.tcScanBarcode.Controls.Add(this.tabPage5);
             this.tcScanBarcode.Location = new System.Drawing.Point(12, 12);
             this.tcScanBarcode.Name = "tcScanBarcode";
             this.tcScanBarcode.SelectedIndex = 0;
@@ -174,6 +191,7 @@
             this.btnStart.TabIndex = 25;
             this.btnStart.Text = "Bật";
             this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // lbresultdtgv
             // 
@@ -242,6 +260,16 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Tạo Barcode";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Location = new System.Drawing.Point(32, 164);
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
+            this.btnRefresh.TabIndex = 6;
+            this.btnRefresh.Text = "Xoá dữ liệu";
+            this.btnRefresh.UseVisualStyleBackColor = true;
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
             // btnSave
             // 
@@ -323,6 +351,16 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Tạo sản phẩm";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // btnNull
+            // 
+            this.btnNull.Location = new System.Drawing.Point(753, 301);
+            this.btnNull.Name = "btnNull";
+            this.btnNull.Size = new System.Drawing.Size(75, 23);
+            this.btnNull.TabIndex = 19;
+            this.btnNull.Text = "Xoá dữ liệu";
+            this.btnNull.UseVisualStyleBackColor = true;
+            this.btnNull.Click += new System.EventHandler(this.btnNull_Click);
             // 
             // btnConfirm
             // 
@@ -481,6 +519,10 @@
             // 
             // tabPage4
             // 
+            this.tabPage4.Controls.Add(this.btnIn);
+            this.tabPage4.Controls.Add(this.tbSearch);
+            this.tabPage4.Controls.Add(this.btnSearch);
+            this.tabPage4.Controls.Add(this.lbReloadData);
             this.tabPage4.Controls.Add(this.dataGridView1);
             this.tabPage4.Location = new System.Drawing.Point(4, 22);
             this.tabPage4.Name = "tabPage4";
@@ -488,6 +530,17 @@
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "Danh sách sản phẩm";
             this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // lbReloadData
+            // 
+            this.lbReloadData.AutoSize = true;
+            this.lbReloadData.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F);
+            this.lbReloadData.Location = new System.Drawing.Point(294, 24);
+            this.lbReloadData.Name = "lbReloadData";
+            this.lbReloadData.Size = new System.Drawing.Size(269, 31);
+            this.lbReloadData.TabIndex = 1;
+            this.lbReloadData.Text = "Danh sách sản phẩm";
+            this.lbReloadData.Click += new System.EventHandler(this.label3_Click);
             // 
             // dataGridView1
             // 
@@ -501,24 +554,10 @@
             this.quantityDataGridViewTextBoxColumn,
             this.priceDataGridViewTextBoxColumn});
             this.dataGridView1.DataSource = this.productBindingSource;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 121);
+            this.dataGridView1.Location = new System.Drawing.Point(19, 127);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(646, 47);
+            this.dataGridView1.Size = new System.Drawing.Size(646, 275);
             this.dataGridView1.TabIndex = 0;
-            // 
-            // barcodeDataSet
-            // 
-            this.barcodeDataSet.DataSetName = "barcodeDataSet";
-            this.barcodeDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
-            // 
-            // productBindingSource
-            // 
-            this.productBindingSource.DataMember = "Product";
-            this.productBindingSource.DataSource = this.barcodeDataSet;
-            // 
-            // productTableAdapter
-            // 
-            this.productTableAdapter.ClearBeforeFill = true;
             // 
             // productIdDataGridViewTextBoxColumn
             // 
@@ -557,25 +596,154 @@
             this.priceDataGridViewTextBoxColumn.HeaderText = "price";
             this.priceDataGridViewTextBoxColumn.Name = "priceDataGridViewTextBoxColumn";
             // 
-            // btnRefresh
+            // productBindingSource
             // 
-            this.btnRefresh.Location = new System.Drawing.Point(32, 164);
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(75, 23);
-            this.btnRefresh.TabIndex = 6;
-            this.btnRefresh.Text = "Xoá dữ liệu";
-            this.btnRefresh.UseVisualStyleBackColor = true;
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            this.productBindingSource.DataMember = "Product";
+            this.productBindingSource.DataSource = this.barcodeDataSet;
             // 
-            // btnNull
+            // barcodeDataSet
             // 
-            this.btnNull.Location = new System.Drawing.Point(753, 301);
-            this.btnNull.Name = "btnNull";
-            this.btnNull.Size = new System.Drawing.Size(75, 23);
-            this.btnNull.TabIndex = 19;
-            this.btnNull.Text = "Xoá dữ liệu";
-            this.btnNull.UseVisualStyleBackColor = true;
-            this.btnNull.Click += new System.EventHandler(this.btnNull_Click);
+            this.barcodeDataSet.DataSetName = "barcodeDataSet";
+            this.barcodeDataSet.SchemaSerializationMode = System.Data.SchemaSerializationMode.IncludeSchema;
+            // 
+            // productTableAdapter
+            // 
+            this.productTableAdapter.ClearBeforeFill = true;
+            // 
+            // btnSearch
+            // 
+            this.btnSearch.Location = new System.Drawing.Point(509, 101);
+            this.btnSearch.Name = "btnSearch";
+            this.btnSearch.Size = new System.Drawing.Size(75, 23);
+            this.btnSearch.TabIndex = 2;
+            this.btnSearch.Text = "Tìm kiếm";
+            this.btnSearch.UseVisualStyleBackColor = true;
+            this.btnSearch.Click += new System.EventHandler(this.btnSearch_Click);
+            // 
+            // tbSearch
+            // 
+            this.tbSearch.Location = new System.Drawing.Point(19, 103);
+            this.tbSearch.Name = "tbSearch";
+            this.tbSearch.Size = new System.Drawing.Size(484, 20);
+            this.tbSearch.TabIndex = 3;
+            // 
+            // btnIn
+            // 
+            this.btnIn.Location = new System.Drawing.Point(590, 100);
+            this.btnIn.Name = "btnIn";
+            this.btnIn.Size = new System.Drawing.Size(75, 23);
+            this.btnIn.TabIndex = 4;
+            this.btnIn.Text = "Nhập";
+            this.btnIn.UseVisualStyleBackColor = true;
+            this.btnIn.Click += new System.EventHandler(this.btnIn_Click);
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.btnPayment);
+            this.tabPage5.Controls.Add(this.tbPayment);
+            this.tabPage5.Controls.Add(this.lbPayment);
+            this.tabPage5.Controls.Add(this.lbCC);
+            this.tabPage5.Controls.Add(this.lbListProduct);
+            this.tabPage5.Controls.Add(this.lbPaymen);
+            this.tabPage5.Controls.Add(this.btnPut);
+            this.tabPage5.Controls.Add(this.btnOn);
+            this.tabPage5.Controls.Add(this.comboBox1);
+            this.tabPage5.Controls.Add(this.listBox1);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(850, 419);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Thanh Toán";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // listBox1
+            // 
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.Location = new System.Drawing.Point(15, 106);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.Size = new System.Drawing.Size(374, 303);
+            this.listBox1.TabIndex = 0;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(633, 106);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 21);
+            this.comboBox1.TabIndex = 1;
+            // 
+            // btnOn
+            // 
+            this.btnOn.Location = new System.Drawing.Point(772, 106);
+            this.btnOn.Name = "btnOn";
+            this.btnOn.Size = new System.Drawing.Size(75, 23);
+            this.btnOn.TabIndex = 2;
+            this.btnOn.Text = "Bật";
+            this.btnOn.UseVisualStyleBackColor = true;
+            // 
+            // btnPut
+            // 
+            this.btnPut.Location = new System.Drawing.Point(772, 135);
+            this.btnPut.Name = "btnPut";
+            this.btnPut.Size = new System.Drawing.Size(75, 23);
+            this.btnPut.TabIndex = 3;
+            this.btnPut.Text = "Nhập";
+            this.btnPut.UseVisualStyleBackColor = true;
+            this.btnPut.Click += new System.EventHandler(this.btnPut_Click);
+            // 
+            // lbPaymen
+            // 
+            this.lbPaymen.AutoSize = true;
+            this.lbPaymen.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F);
+            this.lbPaymen.Location = new System.Drawing.Point(312, 32);
+            this.lbPaymen.Name = "lbPaymen";
+            this.lbPaymen.Size = new System.Drawing.Size(151, 31);
+            this.lbPaymen.TabIndex = 4;
+            this.lbPaymen.Text = "Thanh toán";
+            // 
+            // lbListProduct
+            // 
+            this.lbListProduct.AutoSize = true;
+            this.lbListProduct.Location = new System.Drawing.Point(12, 80);
+            this.lbListProduct.Name = "lbListProduct";
+            this.lbListProduct.Size = new System.Drawing.Size(108, 13);
+            this.lbListProduct.TabIndex = 5;
+            this.lbListProduct.Text = "Danh sách sản phẩm";
+            // 
+            // lbCC
+            // 
+            this.lbCC.AutoSize = true;
+            this.lbCC.Location = new System.Drawing.Point(630, 80);
+            this.lbCC.Name = "lbCC";
+            this.lbCC.Size = new System.Drawing.Size(70, 13);
+            this.lbCC.TabIndex = 6;
+            this.lbCC.Text = "Chọn camera";
+            // 
+            // lbPayment
+            // 
+            this.lbPayment.AutoSize = true;
+            this.lbPayment.Location = new System.Drawing.Point(630, 222);
+            this.lbPayment.Name = "lbPayment";
+            this.lbPayment.Size = new System.Drawing.Size(58, 13);
+            this.lbPayment.TabIndex = 7;
+            this.lbPayment.Text = "Thành tiền";
+            // 
+            // tbPayment
+            // 
+            this.tbPayment.Location = new System.Drawing.Point(633, 250);
+            this.tbPayment.Name = "tbPayment";
+            this.tbPayment.Size = new System.Drawing.Size(121, 20);
+            this.tbPayment.TabIndex = 8;
+            // 
+            // btnPayment
+            // 
+            this.btnPayment.Location = new System.Drawing.Point(772, 250);
+            this.btnPayment.Name = "btnPayment";
+            this.btnPayment.Size = new System.Drawing.Size(75, 23);
+            this.btnPayment.TabIndex = 9;
+            this.btnPayment.Text = "Tính";
+            this.btnPayment.UseVisualStyleBackColor = true;
+            this.btnPayment.Click += new System.EventHandler(this.btnPayment_Click);
             // 
             // Form1
             // 
@@ -599,9 +767,12 @@
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pbDisplayCamera)).EndInit();
             this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.barcodeDataSet)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.productBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.barcodeDataSet)).EndInit();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -660,6 +831,21 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn priceDataGridViewTextBoxColumn;
         private System.Windows.Forms.Button btnRefresh;
         private System.Windows.Forms.Button btnNull;
+        private System.Windows.Forms.Label lbReloadData;
+        private System.Windows.Forms.Button btnSearch;
+        public System.Windows.Forms.TextBox tbSearch;
+        private System.Windows.Forms.Button btnIn;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.ListBox listBox1;
+        private System.Windows.Forms.Label lbCC;
+        private System.Windows.Forms.Label lbListProduct;
+        private System.Windows.Forms.Label lbPaymen;
+        private System.Windows.Forms.Button btnPut;
+        private System.Windows.Forms.Button btnOn;
+        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.Label lbPayment;
+        private System.Windows.Forms.Button btnPayment;
+        private System.Windows.Forms.TextBox tbPayment;
     }
 }
 
